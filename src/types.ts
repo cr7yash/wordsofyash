@@ -16,3 +16,12 @@ export type SocialLink = {
 export type IconMap = {
   [key: string]: string
 }
+
+export type ExperienceItem = {
+  role: string
+  company: string
+  period: string
+  current?: boolean
+  icon: string
+  key: string
+}
