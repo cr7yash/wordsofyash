@@ -2,10 +2,12 @@
 import BlogCard from '@/components/BlogCard.astro'
 import Link from '@/components/Link.astro'
 import PageHead from '@/components/PageHead.astro'
+import ProfileImage from '@/components/ProfileImage.astro'
+import ProjectCard from '@/components/ProjectCard.astro'
 import { buttonVariants } from '@/components/ui/button'
-import { SITE,SOCIAL_LINKS, ICON_MAP, experience } from '@/consts'
+import { SITE, SOCIAL_LINKS, ICON_MAP, experience } from '@/consts'
 import Layout from '@/layouts/Layout.astro'
-import { getRecentPosts } from '@/lib/data-utils'
+import { getRecentPosts, getRecentProjects } from '@/lib/data-utils'
 import type { SocialLink } from '@/types'
 import { Icon } from 'astro-icon/components'
 import { cn } from '@/lib/utils'
@@ -13,6 +15,7 @@ import Skills from '@/components/React/Skills'
 import ErrorBoundary from '@/components/React/ErrorBoundary'
 
 const blog = await getRecentPosts(SITE.featuredPostCount)
+const projects = await getRecentProjects(SITE.featuredProjectCount)
 ---
 
 <Layout class="max-w-3xl">
@@ -30,15 +33,22 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
         <span class="text-xs font-medium text-green-700 dark:text-green-400 uppercase tracking-wide">Available for work</span>
       </div>
 
-      <!-- Heading & Description -->
-      <div class="space-y-4">
-        <h1 class="text-4xl md:text-5xl font-bold leading-tight">
-          Hi, I'm <span class="bg-gradient-to-r from-primary via-primary to-foreground bg-clip-text text-transparent">Yash Srivastava</span>
-        </h1>
-        <p class="text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
-          Software engineer passionate about building meaningful technology and responsible AI.
-          Seeking opportunities to create impactful solutions.
-        </p>
+      <!-- Profile Picture, Heading & Description -->
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
+        <ProfileImage
+          size={112}
+          eager
+          class="size-24 sm:size-28 shrink-0 rounded-full border-2 border-border object-cover shadow-md"
+        />
+        <div class="space-y-4">
+          <h1 class="text-4xl md:text-5xl font-bold leading-tight">
+            Hi, I'm <span class="bg-gradient-to-r from-primary via-primary to-foreground bg-clip-text text-transparent">Yash Srivastava</span>
+          </h1>
+          <p class="text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            Software engineer passionate about building meaningful technology and responsible AI.
+            Seeking opportunities to create impactful solutions.
+          </p>
+        </div>
       </div>
 
       <!-- CTAs -->
@@ -186,6 +196,41 @@ const blog = await getRecentPosts(SITE.featuredPostCount)
     <ErrorBoundary client:load transition:persist="skills-error-boundary">
       <Skills client:load transition:persist="skills-section" />
     </ErrorBoundary>
+  </section>
+
+  <!-- Projects -->
+  <section class="mt-12">
+    <div class="mb-6">
+      <h2 class="text-2xl font-semibold mb-2">Projects</h2>
+      <p class="text-sm text-muted-foreground">
+        Selected work across web engineering and AI
+      </p>
+    </div>
+
+    {projects.length > 0 ? (
+      <>
+        <ul class="flex flex-col gap-y-4 mb-6">
+          {projects.map((project) => (
+            <li>
+              <ProjectCard project={project} />
+            </li>
+          ))}
+        </ul>
+        <div class="flex justify-center">
+          <Link
+            href="/projects"
+            class={buttonVariants({ variant: 'ghost' }) + ' group'}
+          >
+            See all projects <span
+              class="ml-1.5 transition-transform group-hover:translate-x-1"
+              >&rarr;</span
+            >
+          </Link>
+        </div>
+      </>
+    ) : (
+      <p class="text-sm text-muted-foreground italic">No projects available yet.</p>
+    )}
   </section>
 
   <!-- Recent Posts -->

@@ -23,11 +23,37 @@ export async function getAllPostsAndSubposts(): Promise<
 
 export async function getAllProjects(): Promise<CollectionEntry<'projects'>[]> {
   const projects = await getCollection('projects')
-  return projects.sort((a, b) => {
-    const dateA = a.data.startDate?.getTime() || 0
-    const dateB = b.data.startDate?.getTime() || 0
-    return dateB - dateA
-  })
+  return projects
+    .filter((project) => !project.data.draft)
+    .sort((a, b) => {
+      const dateA = a.data.startDate?.getTime() || 0
+      const dateB = b.data.startDate?.getTime() || 0
+      return dateB - dateA
+    })
+}
+
+export async function getRecentProjects(
+  count: number,
+): Promise<CollectionEntry<'projects'>[]> {
+  const projects = await getAllProjects()
+  return projects.slice(0, count)
+}
+
+export async function getProjectById(
+  projectId: string,
+): Promise<CollectionEntry<'projects'> | null> {
+  const projects = await getAllProjects()
+  return projects.find((project) => project.id === projectId) || null
+}
+
+export async function getProjectReadingTime(
+  projectId: string,
+): Promise<string> {
+  const project = await getProjectById(projectId)
+  if (!project) return readingTime(0)
+
+  const wordCount = calculateWordCountFromHtml(project.body)
+  return readingTime(wordCount)
 }
 
 export async function getAllTags(): Promise<Map<string, number>> {
@@ -191,6 +217,9 @@ export async function getParentPost(
   return allPosts.find((post) => post.id === parentId) || null
 }
 
+/** Shown for authors with no avatar, and if a remote avatar fails to load. */
+export const AUTHOR_AVATAR_FALLBACK = '/static/logo.png'
+
 export async function parseAuthors(authorIds: string[] = []) {
   if (!authorIds.length) return []
 
@@ -202,7 +231,7 @@ export async function parseAuthors(authorIds: string[] = []) {
     return {
       id,
       name: author?.data?.name || id,
-      avatar: author?.data?.avatar || '/static/logo.png',
+      avatar: author?.data?.avatar || AUTHOR_AVATAR_FALLBACK,
       isRegistered: !!author,
     }
   })

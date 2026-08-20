@@ -1,0 +1,223 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import Link from '@/components/Link.astro'
+import ProjectHead from '@/components/ProjectHead.astro'
+import TOCHeader from '@/components/TOCHeader.astro'
+import TOCSidebar from '@/components/TOCSidebar.astro'
+import { Badge } from '@/components/ui/badge'
+import { Button, buttonVariants } from '@/components/ui/button'
+import Layout from '@/layouts/Layout.astro'
+import { getAllProjects, getProjectReadingTime } from '@/lib/data-utils'
+import { formatDate } from '@/lib/utils'
+import { Icon } from 'astro-icon/components'
+import { Image } from 'astro:assets'
+import { render } from 'astro:content'
+
+export async function getStaticPaths() {
+  const projects = await getAllProjects()
+  return projects.map((project) => ({
+    params: { id: project.id },
+    props: project,
+  }))
+}
+
+const project = Astro.props
+const currentProjectId = Astro.params.id
+const { Content, headings } = await render(project)
+
+const readingTime = await getProjectReadingTime(currentProjectId)
+const tocSections =
+  headings.length > 0
+    ? [{ type: 'parent' as const, title: 'Overview', headings }]
+    : []
+---
+
+<Layout>
+  <ProjectHead slot="head" project={project} />
+  {
+    headings.length > 0 && (
+      <TOCHeader slot="table-of-contents" headings={headings} />
+    )
+  }
+
+  <section
+    class="grid grid-cols-[minmax(0px,1fr)_min(calc(var(--breakpoint-md)-2rem),100%)_minmax(0px,1fr)] gap-y-6"
+  >
+    <div class="col-start-2">
+      <Breadcrumbs
+        items={[
+          {
+            href: '/projects',
+            label: 'Projects',
+            icon: 'lucide:folder-git-2',
+          },
+          {
+            href: `/projects/${currentProjectId}`,
+            label: project.data.name,
+            icon: 'lucide:file-code',
+          },
+        ]}
+      />
+    </div>
+
+    {
+      project.data.image && (
+        <Image
+          src={project.data.image}
+          alt={project.data.name}
+          width={1200}
+          height={630}
+          class="col-span-full mx-auto w-full max-w-5xl object-cover"
+        />
+      )
+    }
+
+    <section class="col-start-2 flex flex-col gap-y-6 text-center">
+      <div class="flex flex-col">
+        <h1
+          class="mb-2 scroll-mt-31 text-3xl leading-tight font-medium sm:text-4xl"
+          id="post-title"
+        >
+          {project.data.name}
+        </h1>
+
+        <p class="text-muted-foreground mb-4 text-base">
+          {project.data.description}
+        </p>
+
+        <div
+          class="text-muted-foreground divide-border mb-4 flex flex-col items-center justify-center divide-y text-xs sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0 sm:text-sm"
+        >
+          {
+            project.data.startDate && (
+              <div class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
+                <Icon name="lucide:calendar" class="size-3" />
+                <span>
+                  {formatDate(project.data.startDate)}
+                  {project.data.endDate
+                    ? ` → ${formatDate(project.data.endDate)}`
+                    : ' → Present'}
+                </span>
+              </div>
+            )
+          }
+
+          <div
+            class="flex w-full items-center justify-center gap-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0"
+          >
+            <span>{readingTime}</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2">
+          {
+            project.data.tags &&
+              project.data.tags.length > 0 &&
+              project.data.tags.map((tag: string) => (
+                <Badge variant="muted" className="flex items-center gap-x-1">
+                  <Icon name="lucide:hash" class="size-3" />
+                  {tag}
+                </Badge>
+              ))
+          }
+        </div>
+      </div>
+
+      {
+        (project.data.link || project.data.repo) && (
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            {project.data.link && (
+              <Link
+                href={project.data.link}
+                class={buttonVariants({ variant: 'default' })}
+                external
+              >
+                <Icon name="lucide:external-link" class="size-4" />
+                Live Demo
+              </Link>
+            )}
+            {project.data.repo && (
+              <Link
+                href={project.data.repo}
+                class={buttonVariants({ variant: 'outline' })}
+                external
+              >
+                <Icon name="lucide:github" class="size-4" />
+                Source
+              </Link>
+            )}
+          </div>
+        )
+      }
+    </section>
+
+    {
+      tocSections.length > 0 && (
+        <TOCSidebar
+          sections={tocSections}
+          currentPostId={currentProjectId}
+          basePath="/projects"
+        />
+      )
+    }
+
+    <article class="prose col-start-2 max-w-none">
+      <Content />
+    </article>
+
+    <div class="col-start-2 flex justify-center">
+      <Link href="/projects" class={buttonVariants({ variant: 'ghost' })}>
+        <span class="mr-1.5">&larr;</span> All projects
+      </Link>
+    </div>
+  </section>
+
+  <Button
+    variant="outline"
+    size="icon"
+    className="group fixed right-8 bottom-8 z-50 hidden"
+    id="scroll-to-top"
+    title="Scroll to top"
+    aria-label="Scroll to top"
+  >
+    <Icon
+      name="lucide:arrow-up"
+      class="mx-auto size-4 transition-all group-hover:-translate-y-0.5"
+    />
+  </Button>
+
+  <script>
+    document.addEventListener('astro:page-load', () => {
+      const scrollToTopButton = document.getElementById('scroll-to-top')
+      const footer = document.querySelector('footer')
+
+      if (scrollToTopButton && footer) {
+        scrollToTopButton.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        })
+
+        window.addEventListener('scroll', () => {
+          const footerRect = footer.getBoundingClientRect()
+          const isFooterVisible = footerRect.top <= window.innerHeight
+
+          scrollToTopButton.classList.toggle(
+            'hidden',
+            window.scrollY <= 300 || isFooterVisible,
+          )
+        })
+      }
+    })
+  </script>
+</Layout>
+
+<script>
+  if (document.querySelector('.katex')) {
+    if (!document.querySelector('link[href*="katex.min.css"]')) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href =
+        'https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css'
+      document.head.appendChild(link)
+    }
+  }
+</script>

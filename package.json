@@ -10,6 +10,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "prettier": "prettier --write **/*.{ts,tsx,css,astro} --ignore-path .gitignore",
+    "sync-avatar": "node scripts/sync-avatar.mjs",
     "postinstall": "patch-package"
   },
   "dependencies": {

@@ -8,13 +8,23 @@ export const SITE: Site = {
   author: 'Yash',
   locale: 'en-US',
   featuredPostCount: 2,
+  featuredProjectCount: 3,
   postsPerPage: 3,
 }
+
+// Gravatar serves the avatar for yashaqua@gmail.com off the SHA-256 of the
+// address. Append `?size=N` for the resolution you need.
+export const GRAVATAR_URL =
+  'https://gravatar.com/avatar/cb0fe9004a490665203c6caeccfcc8acffd94eeef18884e50cb44c55ed68bee3'
 
 export const NAV_LINKS: SocialLink[] = [
   {
     href: '/blog',
     label: 'blog',
+  },
+  {
+    href: '/projects',
+    label: 'projects',
   },
   {
     href: '/about',

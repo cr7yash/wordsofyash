@@ -5,6 +5,7 @@ export type Site = {
   author: string
   locale: string
   featuredPostCount: number
+  featuredProjectCount: number
   postsPerPage: number
 }
 

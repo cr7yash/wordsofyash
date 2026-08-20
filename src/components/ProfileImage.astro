@@ -1,0 +1,41 @@
+---
+import { GRAVATAR_URL } from '@/consts'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  /** Rendered size in CSS pixels. The remote image is requested at 2x for HiDPI. */
+  size: number
+  class?: string
+  alt?: string
+  /** Set for above-the-fold images so they are not lazily loaded. */
+  eager?: boolean
+}
+
+const {
+  size,
+  class: className,
+  alt = 'Yash Srivastava',
+  eager = false,
+} = Astro.props
+
+const remote = `${GRAVATAR_URL}?size=${size * 2}`
+
+// Generated from the same Gravatar by `npm run sync-avatar`, so the swap is
+// invisible. Painted as a background it shows instantly while the remote image
+// is still in flight; the onerror handler covers gravatar.com failing outright.
+// Two sizes so the 24px header does not pay for the 256px file.
+const fallback =
+  size <= 48 ? '/static/avatar-sm.webp' : '/static/avatar.webp'
+---
+
+<img
+  src={remote}
+  alt={alt}
+  width={size}
+  height={size}
+  loading={eager ? 'eager' : 'lazy'}
+  decoding="async"
+  class={cn('bg-muted bg-cover bg-center', className)}
+  style={`background-image:url('${fallback}')`}
+  onerror={`this.onerror=null;this.src='${fallback}'`}
+/>

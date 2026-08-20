@@ -271,25 +271,11 @@ The project schema is defined as follows:
 | `startDate`   | `coerce.date()` | Must be in `YYYY-MM-DD` format.         | Optional |
 | `endDate`     | `coerce.date()` | Must be in `YYYY-MM-DD` format.         | Optional |
 
-## License
+## TODO
 
-This project is open source and available under the [MIT License](LICENSE).
+- [ ] Add projects section
+- [ ] Update blog posts with author
+- [ ] Update avatar
+- [ ] Add a circle on the main page with profile picture
+- [ ] Update about section
 
----
-
-### Star History
-
-<a href="https://star-history.com/#jktrn/astro-erudite&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=jktrn/astro-erudite&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=jktrn/astro-erudite&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=jktrn/astro-erudite&type=Date" />
- </picture>
-</a>
-
----
-
-Built with &hearts; by [enscribe](https://enscribe.dev)!
-
-[Stargazers]: https://img.shields.io/github/stars/jktrn/astro-erudite?color=fafafa&logo=github&logoColor=fff&style=for-the-badge
-[License]: https://img.shields.io/github/license/jktrn/astro-erudite?color=0a0a0a&logo=github&logoColor=fff&style=for-the-badge
