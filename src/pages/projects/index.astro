@@ -1,0 +1,39 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import PageHead from '@/components/PageHead.astro'
+import ProjectCard from '@/components/ProjectCard.astro'
+import Layout from '@/layouts/Layout.astro'
+import { getAllProjects } from '@/lib/data-utils'
+
+const projects = await getAllProjects()
+---
+
+<Layout class="max-w-3xl">
+  <PageHead slot="head" title="Projects" />
+  <Breadcrumbs items={[{ label: 'Projects', icon: 'lucide:folder-git-2' }]} />
+
+  <div class="flex min-h-[calc(100vh-18rem)] flex-col gap-y-8">
+    <div>
+      <h1 class="mb-2 text-2xl font-semibold">Projects</h1>
+      <p class="text-muted-foreground text-sm">
+        Things I've built across web engineering and AI.
+      </p>
+    </div>
+
+    {
+      projects.length > 0 ? (
+        <ul class="flex flex-col gap-4">
+          {projects.map((project) => (
+            <li>
+              <ProjectCard project={project} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-muted-foreground text-sm italic">
+          No projects available yet.
+        </p>
+      )
+    }
+  </div>
+</Layout>

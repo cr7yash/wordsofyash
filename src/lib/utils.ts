@@ -10,6 +10,9 @@ export function formatDate(date: Date) {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    // Frontmatter dates parse as UTC midnight; formatting in the local zone
+    // would render them a day early west of Greenwich.
+    timeZone: 'UTC',
   }).format(date)
 }
 

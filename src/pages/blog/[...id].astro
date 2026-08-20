@@ -11,6 +11,7 @@ import { badgeVariants } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Layout from '@/layouts/Layout.astro'
 import {
+  AUTHOR_AVATAR_FALLBACK,
   getAdjacentPosts,
   getAllPostsAndSubposts,
   getCombinedReadingTime,
@@ -137,12 +138,15 @@ const tocSections = await getTOCSections(currentPostId)
               <div class="flex w-full items-center justify-center gap-x-2 py-2 sm:w-fit sm:px-2 sm:py-0 first:sm:pl-0 last:sm:pr-0">
                 {authors.map((author) => (
                   <div class="flex items-center gap-x-1.5">
-                    <Image
+                    <img
                       src={author.avatar}
                       alt={author.name}
                       width={20}
                       height={20}
-                      class="rounded-full"
+                      loading="lazy"
+                      decoding="async"
+                      class="bg-muted size-5 rounded-full object-cover"
+                      onerror={`this.onerror=null;this.src='${AUTHOR_AVATAR_FALLBACK}'`}
                     />
                     {author.isRegistered ? (
                       <Link
